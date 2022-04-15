@@ -38,54 +38,52 @@ class MainActivity : ComponentActivity() {
             val themeSetting =
                 viewModel.themeSetting.collectAsState(ApplicationThemes.Automatic).value
 
-            val userDarkTheme = themeSetting?.let {
+            val useDarkTheme = themeSetting.let {
                 when (it) {
                     ApplicationThemes.Automatic -> isSystemInDarkTheme()
                     ApplicationThemes.Light -> false
                     ApplicationThemes.Dark -> true
+                    else -> it == ApplicationThemes.Light
                 }
             }
 
-            if (userDarkTheme != null) {
-                ComposeDataStoreThemingTheme(darkTheme = userDarkTheme) {
+            ComposeDataStoreThemingTheme(darkTheme = useDarkTheme) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colors.background),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colors.background),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    Text(
+                        text = "Current Application Theme is ${themeSetting?.name}",
+                        color = MaterialTheme.colors.primary
+                    )
+
+
+                    ChangeThemeButton(
+                        themeName = "Light Mode",
+                        themeIcon = Icons.Rounded.LightMode
                     ) {
-
-
-                        Text(
-                            text = "Current Application Theme ${themeSetting?.name}",
-                            color = MaterialTheme.colors.primary
-                        )
-
-
-                        ChangeThemeButton(
-                            themeName = "Light Mode",
-                            themeIcon = Icons.Rounded.LightMode
-                        ) {
-                            viewModel.changeTheme(ApplicationThemes.Light)
-                        }
-
-                        ChangeThemeButton(
-                            themeName = "Dark Mode",
-                            themeIcon = Icons.Rounded.DarkMode
-                        ) {
-                            viewModel.changeTheme(ApplicationThemes.Dark)
-                        }
-
-                        ChangeThemeButton(
-                            themeName = "Automatic",
-                            themeIcon = Icons.Rounded.BrightnessAuto
-                        ) {
-                            viewModel.changeTheme(ApplicationThemes.Automatic)
-                        }
-
+                        viewModel.changeTheme(ApplicationThemes.Light)
                     }
+
+                    ChangeThemeButton(
+                        themeName = "Dark Mode",
+                        themeIcon = Icons.Rounded.DarkMode
+                    ) {
+                        viewModel.changeTheme(ApplicationThemes.Dark)
+                    }
+
+                    ChangeThemeButton(
+                        themeName = "Automatic",
+                        themeIcon = Icons.Rounded.BrightnessAuto
+                    ) {
+                        viewModel.changeTheme(ApplicationThemes.Automatic)
+                    }
+
                 }
             }
         }
@@ -112,7 +110,8 @@ fun ChangeThemeButton(
         Icon(
             themeIcon,
             "icon",
-            modifier = Modifier.weight(.2f)
+            modifier = Modifier
+                .weight(.2f)
         )
         Text(
             "Change theme to $themeName",
